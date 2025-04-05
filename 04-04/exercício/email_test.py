@@ -10,7 +10,6 @@ def test_success_verify_email():
     assert validar_email(email) == True, f"Email {email} deveria ser válido"
     
 def test_exception_email_username():
-    
     with pytest.raises(UsernameEmailError):
         validar_email("@fim.br") == False
     
