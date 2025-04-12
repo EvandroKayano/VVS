@@ -1,0 +1,7 @@
+11-04
+pip install coverage
+python -m coverage run -m pytest
+python -m coverage report -m
+
+pytest patch
+stub - dizer no teste o que aquele método vai retornar (em vez de aleatorio, vai retornar aquilo)
