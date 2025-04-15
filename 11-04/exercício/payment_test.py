@@ -28,5 +28,3 @@ def test_exceded_payment_attempts():
     with patch('random.random', side_effect=[0.2, 0.2, 0.2]):
         with pytest.raises(PaymentGatewayError):
             process_payment("user_123", 100, "USD")        
-
-# o valor da função random.random() é 0.2, o que significa que a conexão falha
