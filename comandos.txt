@@ -5,3 +5,5 @@ python -m coverage report -m
 
 pytest patch
 stub - dizer no teste o que aquele método vai retornar (em vez de aleatorio, vai retornar aquilo)
+
+mutatest -s . -t "pytest" -r 314
