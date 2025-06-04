@@ -19,6 +19,11 @@ X Get available seats
 x Can add room to theater
 X Can remove room from theater
 X Each theater room has unique name
+X Can add movie to theater catalog list
+X Cannot add movie with duplicated title
+X Can remove movie from theater catalog list
+X Can add sessions to theater
+X Can remove sessions to theater
 
 # Movie Tests
 X Create movie
@@ -27,10 +32,10 @@ X Get formatted duration (90 minutes movie -> 1h30min)
 X Get duration as timedelta (converts movie length in minutes to a timedelta object for time calculations)
 
 # Session Tests
-1. Create session
-2. Session has unique ID
-3. Calculate end time
-4. Check if seat is available
+X Create session class
+X Session has unique ID
+X Calculate end time
+X Check if seat is available
 5. Get all available seats
 6. Detect session overlap same room
 7. No overlap different rooms

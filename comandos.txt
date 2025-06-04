@@ -7,3 +7,10 @@ pytest patch
 stub - dizer no teste o que aquele método vai retornar (em vez de aleatorio, vai retornar aquilo)
 
 mutatest -s . -t "pytest" -r 314
+
+* TDD
+
+1. Faz o teste e falhe miseravelmente;
+2. Implemente o código para tratar do erro do teste;
+3. Faça o teste passar;
+4. Repita o passo 1 para cada teste.
