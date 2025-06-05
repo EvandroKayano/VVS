@@ -6,3 +6,9 @@ class DuplicateMovieName(Exception):
 
 class DuplicateSession(Exception):
     pass
+
+class OverlapSessionRoom(Exception):
+    pass
+
+class OverlapSessionStartTime(Exception):
+    pass

@@ -33,13 +33,12 @@ X Get duration as timedelta (converts movie length in minutes to a timedelta obj
 
 # Session Tests
 X Create session class
-X Session has unique ID
 X Calculate end time
 X Check if seat is available
-5. Get all available seats
-6. Detect session overlap same room
-7. No overlap different rooms
-8. No overlap sequential sessions
+X Get all available seats
+X Detect session overlap same room
+X No overlap different rooms
+X No overlap sequential sessions
 
 # User Tests
 1. Create user

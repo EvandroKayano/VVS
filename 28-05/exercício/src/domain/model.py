@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from src.domain.errors import DuplicateRoomName, DuplicateMovieName, DuplicateSession
+from src.domain.errors import DuplicateRoomName, DuplicateMovieName, DuplicateSession, OverlapSessionRoom, OverlapSessionStartTime
 from datetime import timedelta, datetime
 
 class SeatStatus(Enum):
@@ -77,6 +77,7 @@ class Room:
                 if seat.is_available:
                     available_seats += 1
         return available_seats
+ 
     
 @dataclass
 class Movie:
@@ -89,9 +90,8 @@ class Movie:
         
     def get_duration(self):
         minutes = self.duration % 60
-        hours = int(self.duration // 60)    
-        result = f'{hours}h{minutes}min'
-        return result
+        hours = int(self.duration // 60)
+        return (f'{minutes}min' if hours == 0 else f'{hours}h{minutes}min' if minutes>0 else f'{hours}h')
     
     def get_timedelta(self):
         return timedelta(minutes=self.duration)
@@ -101,19 +101,15 @@ class Movie:
 class Session:
     room: Room
     movie: Movie
-    id: int
-    start_time: str
+    start_time: datetime
     
-    def __init__(self, movie, room, start_time, id):
+    def __init__(self, movie, room, start_time):
         self.room = room
         self.movie = movie
-        self.start_time = start_time
-        self.id = id
+        self.start_time = datetime.strptime(start_time, "%H:%M")
     
     def end_time(self):
-        formatted_date = datetime.strptime(self.start_time, "%H:%M")
-        end_dt = formatted_date + self.movie.get_timedelta()
-        return end_dt.strftime("%H:%M")    
+        return self.start_time + self.movie.get_timedelta()
     
     def check_available_seat(self,seat_name):
         '''
@@ -133,7 +129,6 @@ class Theater:
     rooms: list[Room] = field(default_factory=list)
     movies: list[Movie] = field(default_factory=list)
     sessions: list[Session] = field(default_factory=list)
-    n_sessions: int = 0
 
     def add(self, room):
         if self.duplicate_room_name(room):
@@ -161,25 +156,36 @@ class Theater:
     
     def create_session(self, movie, room, start_time):
         '''
-        takes a movie and a room and creates a session
+        takes a movie, a room, a datetime and creates a session
         '''
-        session = Session(movie, room, start_time, self.n_sessions)
-        self.n_sessions += 1
+        session = Session(movie, room, start_time)
         self.add_session(session)
         
         return session
     
     def add_session(self, session):
         # checks if the object is duplicated
-        if self.duplicate_session(session):
-            raise DuplicateSession
-        self.sessions.append(session)
+        if not self.raise_Exception(session):
+            self.sessions.append(session)
         
+
+        
+    def raise_Exception(self, session):
+        # adicionando sessão igual
+        if [dup_session for dup_session in self.sessions if dup_session == session]:
+            raise DuplicateSession
+        
+        for s in self.sessions:
+            # adicionando uma sessão na mesma sala e horário
+            if s.room == session.room and s.start_time == session.start_time:
+                raise OverlapSessionRoom    
+            # adicionando uma sessão na mesma sala, enquanto o filme ainda não acabou
+            if s.room == session.room and s.end_time() > session.start_time:
+                raise OverlapSessionStartTime
+
     def remove_session(self, session):
         '''
         takes a session and remove
         '''
         self.sessions.remove(session)
         
-    def duplicate_session(self, session):
-        return [dup_session for dup_session in self.sessions if dup_session.id == session.id]

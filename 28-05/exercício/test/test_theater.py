@@ -49,7 +49,7 @@ def test_can_add_session():
     room = Room("1")
     movie = Movie("MovieName",90)
     theater.create_session(movie, room, "14:30")
-    created_session = Session(movie, room, "14:30", theater.n_sessions-1)
+    created_session = Session(movie, room, "14:30")
     assert created_session in theater.sessions
     
 def test_can_remove_session():
