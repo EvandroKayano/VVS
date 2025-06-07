@@ -41,17 +41,13 @@ X No overlap different rooms
 X No overlap sequential sessions
 
 # User Tests
-1. Create user
-2. User has unique ID
-3. User bookings start empty
+X User bookings start empty
 
 # Booking Tests
-1. Create booking
-2. Booking has unique ID
-3. Booking records current time
-4. Calculate total price
-5. Booking added to user bookings
-6. Booking added to session bookings
+X Booking records current time
+X Calculate total price
+X Booking added to user bookings
+X Booking added to session bookings
 7. Confirm booking
 8. Confirm fails if any seat not reserved
 9. Cancel booking

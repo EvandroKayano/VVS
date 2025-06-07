@@ -78,6 +78,9 @@ class Room:
                     available_seats += 1
         return available_seats
  
+    def get_seat(self, seat_name, seat_number):
+        seat_name = ord(seat_name) - 65
+        return self.rows[seat_name][seat_number]
     
 @dataclass
 class Movie:
@@ -102,11 +105,15 @@ class Session:
     room: Room
     movie: Movie
     start_time: datetime
+    price: float
+    bookings: list
     
-    def __init__(self, movie, room, start_time):
+    def __init__(self, movie, room, start_time, price= 10.0, bookings=[]):
         self.room = room
         self.movie = movie
         self.start_time = datetime.strptime(start_time, "%H:%M")
+        self.price = price
+        self.bookings = bookings
     
     def end_time(self):
         return self.start_time + self.movie.get_timedelta()
@@ -168,8 +175,6 @@ class Theater:
         if not self.raise_Exception(session):
             self.sessions.append(session)
         
-
-        
     def raise_Exception(self, session):
         # adicionando sessão igual
         if [dup_session for dup_session in self.sessions if dup_session == session]:
@@ -188,4 +193,56 @@ class Theater:
         takes a session and remove
         '''
         self.sessions.remove(session)
+         
+            
+@dataclass
+class Booking:
+    tickets: list[Session] = field(default_factory=list)       
+    current: datetime = field(default_factory=datetime.now)
+ 
+    def add_session(self,session):
+        if [dup_session for dup_session in self.tickets if dup_session == session]:
+            raise DuplicateSession(session)
+        self.tickets.append(session)
+            
+    def remove_session(self, session):
+        '''
+        takes a session and remove
+        '''
+        self.tickets.remove(session)
         
+    def total_price(self):
+        sum = 0
+        for s in self.tickets:
+            sum += s.price
+            
+        return sum
+        
+    def reserve_seat(self, session:Session, seat_name, seat_number):
+        to_reserve:Seat = session.room.get_seat(seat_name, seat_number)
+        to_reserve.status = SeatStatus.RESERVED
+            
+    def confirm_seat(self, session: Session, seat_name, seat_number):
+        to_confirm:Seat = session.room.get_seat(seat_name, seat_number)
+        to_confirm.status = SeatStatus.OCCUPIED
+            
+            
+@dataclass
+class User:
+    name: str
+    bookings: Booking
+    
+    def __init__(self, name, booking=Booking()):
+        self.name = name
+        self.bookings = booking
+        
+        
+    def add_booking(self, session:Session, seat_name, seat_number):
+        self.bookings.tickets.append(session)
+        session.bookings.append(self)
+        
+        self.bookings.reserve_seat(session, seat_name, seat_number)
+        
+    def confirm_booking(self, session:Session, seat_name, seat_number):
+        self.bookings.tickets[0].bookings.pop()
+        self.bookings.confirm_seat(session, seat_name, seat_number)
