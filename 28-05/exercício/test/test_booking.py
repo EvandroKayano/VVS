@@ -1,6 +1,7 @@
 from src.domain.model import Session, Booking, User, Theater, Room, Seat, SeatStatus
 from test.builder.session_builder import SessionBuilder
 from datetime import datetime
+import pytest
 
 def test_booking_time_tracking():
     booking = Booking()
@@ -43,3 +44,24 @@ def test_can_confirm_booking():
     
     assert len(session.bookings) == 1
     assert seat.status == SeatStatus.OCCUPIED
+    
+def test_confirm_fails_if_not_reserved():
+    user = User("Evandro")
+    session:Session = SessionBuilder().aSession().build()
+    seat_name = "B"
+    seat_number = 4
+    seat = session.room.get_seat(seat_name, seat_number)
+    
+    with pytest.raises(Exception):
+        user.confirm_booking(session,seat_name, seat_number)
+        
+def test_can_cancel_booking():
+    user = User("Evandro")
+    session:Session = SessionBuilder().aSession().build()
+    seat_name = "B"
+    seat_number = 4
+    user.add_booking(session, seat_name, seat_number)
+    seat = user.bookings.tickets[0].room.get_seat(seat_name, seat_number)
+    user.cancel_booking(session, seat_name, seat_number)
+    
+    assert seat.status == SeatStatus.AVAILABLE

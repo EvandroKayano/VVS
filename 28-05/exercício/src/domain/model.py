@@ -220,11 +220,18 @@ class Booking:
         
     def reserve_seat(self, session:Session, seat_name, seat_number):
         to_reserve:Seat = session.room.get_seat(seat_name, seat_number)
-        to_reserve.status = SeatStatus.RESERVED
+        if to_reserve.status == SeatStatus.AVAILABLE:
+            to_reserve.status = SeatStatus.RESERVED
+        else:
+            raise Exception()
             
     def confirm_seat(self, session: Session, seat_name, seat_number):
         to_confirm:Seat = session.room.get_seat(seat_name, seat_number)
-        to_confirm.status = SeatStatus.OCCUPIED
+        if to_confirm.status == SeatStatus.RESERVED:
+            to_confirm.status = SeatStatus.OCCUPIED
+        else:
+            raise Exception()
+  
             
             
 @dataclass
@@ -244,5 +251,18 @@ class User:
         self.bookings.reserve_seat(session, seat_name, seat_number)
         
     def confirm_booking(self, session:Session, seat_name, seat_number):
-        self.bookings.tickets[0].bookings.pop()
+        sessao:list[Session] = [sess for sess in self.bookings.tickets if session.room == sess.room and sess.start_time == session.start_time]
+        sessao[0].bookings.remove(self)
+        
         self.bookings.confirm_seat(session, seat_name, seat_number)
+        
+    def cancel_booking(self, session, seat_name, seat_number):
+        sessao:list[Session] = [sess for sess in self.bookings.tickets if session.room == sess.room and sess.start_time == session.start_time]
+        sessao[0].bookings.remove(self)
+                
+        for s in self.bookings.tickets:
+            if s.room == sessao[0].room and s.start_time == sessao[0].start_time:
+                self.bookings.tickets.remove(s)
+                
+        seat:Seat = sessao[0].room.get_seat(seat_name,seat_number)
+        seat.status = SeatStatus.AVAILABLE

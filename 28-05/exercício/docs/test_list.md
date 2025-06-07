@@ -48,9 +48,9 @@ X Booking records current time
 X Calculate total price
 X Booking added to user bookings
 X Booking added to session bookings
-7. Confirm booking
-8. Confirm fails if any seat not reserved
-9. Cancel booking
+X Confirm booking
+X Confirm fails if any seat not reserved
+X Cancel booking
 
 # Test associations
 1. Create room, add session and book seats
